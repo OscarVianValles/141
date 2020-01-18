@@ -1,0 +1,8 @@
+int a;#
+int b = 10;#
+int x, y, z = 10;#
+int v[10];#
+int function(int x);#
+int function2(int x){
+  x += x
+}#
