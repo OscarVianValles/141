@@ -1,5 +1,6 @@
 from parser import Parser
 from state import State
+import tokenize
 
 
 class VariableParser(Parser):
@@ -8,6 +9,21 @@ class VariableParser(Parser):
         self.__state: "State" = State0(self)
         self.__currWord: int = 0
 
+        self.__tokenize()
+
+    def __tokenize(self):
+        # Separate leading data type
+        self.__tokens = self.__tokens[0].split(" ", 1)
+
+        # Tokenize variables. Simply replacing self.__tokens[1] would result in
+        # a nested list which we do not want, hence popping the last item and
+        # extending the tokenized variables
+        self.__tokens = tokenize.inPlace(self.__tokens, 1, ",")
+
+        # strip tokens to remove extra white space
+        self.__tokens = [token.strip() for token in self.__tokens if token != ""]
+
+    # Public
     def tokens(self):
         return self.__tokens
 

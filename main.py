@@ -9,27 +9,33 @@ def tokenizeFile() -> [[str]]:
         # Read file
         inputString: str = file.read()
 
-        # Strip Whitespace
-        inputString = inputString.replace("\r", "")
-        inputString = inputString.replace("\n", "")
+        # Remove first line that indicates the number of testcases
+        inputString = inputString.split("\n", 1)[1]
+
+        # Replace new lines with spaces
+        inputString = inputString.replace("\r", " ")
+        inputString = inputString.replace("\n", " ")
+        inputString = inputString.replace("\t", " ")
 
         # Separate Testcases
         testCases: [str] = inputString.split("#")
 
         # Cleanup Empty Testcases
-        testCases = [testCase for testCase in testCases if testCase != ""]
+        testCases = [
+            testCase for testCase in testCases if (testCase != "" and testCase != " ")
+        ]
 
         # Create blank parsers list
         parsers: ["parser"] = []
 
-        # Create
+        # Create parsers depending on the occurence of specific characters
         for testCase in testCases:
             if "{" in testCase:
-                parsers.append(FunctionDeclarationParser([testCase]))
+                parsers.append(FunctionDefinitionParser([testCase.strip()]))
             elif "(" in testCase:
-                parsers.append(FunctionDefinitionParser([testCase]))
+                parsers.append(FunctionDeclarationParser([testCase.strip()]))
             else:
-                parsers.append(VariableParser([testCase]))
+                parsers.append(VariableParser([testCase.strip()]))
 
         return parsers
 
@@ -42,3 +48,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Sources:
+# Behavioral Patterns - CMSC 23

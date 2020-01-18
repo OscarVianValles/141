@@ -1,0 +1,31 @@
+52
+int x;#
+int x,y;#
+int x = 1, y =23;#
+char a;#
+char a = '1';#
+int x, y, z = 10;#
+double a, b, c;#
+double a=2, b=2.7, c=a;#
+char a = 'a';#
+int
+x, w, r;#
+int a
+double x, y, z;#
+char a ='a', a;#
+int x, y, z = 10;#
+char a, i, hellothisisavariablename2;#
+char a, i, hello_this_is_a_variable_name2;#
+float u, va, char;#
+double ax = 2.57, num = 345;#
+double ax = 2.57, num = 345a;#
+double int, char;#
+char ch, letter = 'a', digit = '0';#
+int a, b, c = d;#
+int num = '9';#
+char ch = 122;#
+int x,
+y, x = 45;#
+double a
+int x #
+char ch;#
