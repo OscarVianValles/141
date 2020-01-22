@@ -17,6 +17,9 @@ def tokenizeFile() -> [[str]]:
         inputString = inputString.replace("\n", " ")
         inputString = inputString.replace("\t", " ")
 
+        # Remove concurrent spaces
+        inputString = " ".join(inputString.split())
+
         # Separate Testcases
         testCases: [str] = inputString.split("#")
 
@@ -51,3 +54,4 @@ if __name__ == "__main__":
 
 # Sources:
 # Behavioral Patterns - CMSC 23
+# Remove concurrent spaces - https://pythonexamples.org/python-replace-multiple-spaces-with-single-space-in-text-file/
