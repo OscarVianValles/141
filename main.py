@@ -32,7 +32,7 @@ def tokenizeFile() -> [[str]]:
         for testCase in testCases:
             if "{" in testCase:
                 parsers.append(FunctionDefinitionParser([testCase.strip()]))
-            elif "(" in testCase:
+            elif "(" in testCase and "=" not in testCase:
                 parsers.append(FunctionDeclarationParser([testCase.strip()]))
             else:
                 parsers.append(VariableParser([testCase.strip()]))

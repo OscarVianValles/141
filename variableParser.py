@@ -15,9 +15,7 @@ class VariableParser(Parser):
         # Separate leading data type
         self.__tokens = self.__tokens[0].split(" ", 1)
 
-        # Tokenize variables. Simply replacing self.__tokens[1] would result in
-        # a nested list which we do not want, hence popping the last item and
-        # extending the tokenized variables
+        # Tokenize the variables and place them at the same place
         self.__tokens = tokenize.inPlace(self.__tokens, 1, ",")
 
         # strip tokens to remove extra white space

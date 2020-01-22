@@ -24,9 +24,11 @@ class FunctionDeclarationParser(Parser):
         # Separate the function name
         self.__tokens = tokenize.inPlace(self.__tokens, 1, "(")
 
-        # Store parameters in a separate list
+        # Store parameters in a separate list and clean up leading and
+        # trailing white space
         self.__tokens[2] = self.__tokens[2].split(",")
         self.__tokens[2] = [token.strip() for token in self.__tokens[2]]
+        self.__tokens[2] = [param.strip().split(" ") for param in self.__tokens[2]]
 
         # Strip all tokens except params
         for token in self.__tokens:
