@@ -47,6 +47,8 @@ def main():
     parsers = tokenizeFile()
     for parser in parsers:
         print(parser.tokens())
+        print(parser.check())
+        print("")
 
 
 if __name__ == "__main__":
