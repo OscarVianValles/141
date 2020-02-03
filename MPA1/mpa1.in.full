@@ -1,0 +1,114 @@
+52
+int x;#
+int x,y;#
+int x = 1, y =23;#
+char a;#
+char a = '1';#
+int x, y, z = 10;#
+double a, b, c;#
+double a=2, b=2.7, c=a;#
+char a = 'a';#
+int
+x, w, r;#
+int a
+double x, y, z;#
+char a ='a', a;#
+int x, y, z = 10;#
+char a, i, hellothisisavariablename2;#
+char a, i, hello_this_is_a_variable_name2;#
+float u, va, char;#
+double ax = 2.57, num = 345;#
+double ax = 2.57, num = 345a;#
+double int, char;#
+char ch, letter = 'a', digit = '0';#
+int a, b, c = d;#
+int num = '9';#
+char ch = 122;#
+int x,
+y, x = 45;#
+double a
+int x #
+char ch;#
+void f();#
+int int();#
+int char();#
+int function(int)#
+int a = 10;#
+void f(int);#
+char f_2(int,int);#
+float f2()
+int ch = 9, num = 4;#
+void f(int x){
+	return x;
+}#
+void f(int x, int y){
+	int num = x * y;
+	return num;
+}#
+int f(int x, int y){
+	int num = x * y;
+	return num;
+}#
+int function();#
+int func(int){
+int x = 10;
+}#
+int square(int x){
+    return x * x;
+}#
+int test(){
+	int x = 1234567;
+	return num;
+}#
+int test2(int x, char ch){
+	int x = 245;
+	float ch = 1.678;
+
+	return x;
+}#
+int test(){
+	int x = 1+2*3/4-5+6+7;
+	return x;
+}#
+int test()(){
+	int x = 1+2*3/4-5+6+7;
+	return x;
+}#
+int test()){
+	int x = 1+2*3/4-5+6+7;
+	return x;
+}#
+int test(int,char,float,int){
+	int x = 1+2*3/4-5+6+7;
+	return x;
+}#
+void function(int x){
+	int zzzz = x + 3 - 5 * 6 + y;
+}#
+void function(int x){
+	int zzzz = x + 3 - 5 * 6;
+	void function(int x){
+		int zzzz = x + 3 - 5 * 6;
+	}
+}#
+int function(int x){
+	int zzzz = x + 3 - 5 * 6;
+	
+}#
+void function(){
+	double a = 10;
+	int x, y = 10, z=a;
+}#
+void function(){
+	double 
+	a = 10;
+	int x, y = 10, z=9;
+}#
+void function(){
+	double a = 10
+	int x, y = 10, z=9;
+
+void function(int x){
+	int zzzz = x + 3 - 5 * 6;
+	}
+}#

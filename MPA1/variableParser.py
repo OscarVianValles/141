@@ -11,7 +11,11 @@ class VariableParser(Parser):
         self.__vars: [str] = []
         self.__maxWords: int = 0
 
-        self.__tokenize()
+        try:
+            self.__tokenize()
+        except IndexError:
+            self.__tokens.clear()
+            self.__validity = False
 
     def __tokenize(self):
         # Separate leading data type
@@ -103,8 +107,10 @@ class State2(State):
 
     def check(self) -> bool:
         # Check all letters if it is in the allowable characters list
+        variable = self.__parser.tokens()[1][self.__currWord][0]
+        variable = variable if variable[-1] != ";" else variable[0:-1]
         for var in self.__parser.vars():
-            if var in self.__parser.tokens()[1][self.__currWord][0]:
+            if var == variable:
                 return True
 
         # Go to State4 if it is the last word AND it does not have an assignment function
@@ -365,10 +371,7 @@ class State11(State):
         self.__output: bool = False
 
     def check(self) -> bool:
-        if (
-            self.__parser.tokens()[1][self.__currWord][1].count(".") > 1
-            or self.__parser.tokens()[1][self.__currWord][1][-1] != ";"
-        ):
+        if self.__parser.tokens()[1][self.__currWord][1].count(".") > 1:
             return True
 
         self.__parser.changeState(State1(self.__parser, self.__currWord + 1))

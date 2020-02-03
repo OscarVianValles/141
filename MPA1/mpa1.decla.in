@@ -3,8 +3,6 @@ void f();#
 int int();#
 int char();#
 int function(int)#
-int a = 10;#
 void f(int);#
 char f_2(int,int);#
 float f2()
-int ch = 9, num = 4;#

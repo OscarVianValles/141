@@ -45,10 +45,15 @@ def tokenizeFile() -> [[str]]:
 
 def main():
     parsers = tokenizeFile()
-    for parser in parsers:
-        print(parser.tokens())
-        print(parser.check())
-        print("")
+    count = 1
+    with open("vallesmpa1.out", "w") as f:
+        for parser in parsers:
+            print(count)
+            count += 1
+            print(parser.tokens())
+            print(parser.check())
+            print("")
+            print(parser.check(), file=f)
 
 
 if __name__ == "__main__":
