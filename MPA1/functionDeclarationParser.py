@@ -41,6 +41,10 @@ class FunctionDeclarationParser(Parser):
             tokenize.inPlace(token, 0, "(") for token in self.__tokens[1]
         ]
 
+        # Clean function name
+        for i in self.__tokens[1]:
+            i[0] = i[0].strip()
+
         # Store parameters in a separate list and clean up leading and trailing white space
         for token in self.__tokens[1]:
             token[1] = token[1].split(",")
@@ -117,12 +121,12 @@ class State1(State):
 
     def check(self) -> bool:
         # If empty, stop
-        if self.__parser.tokens()[1][self.__currFunction] == "":
+        if self.__parser.tokens()[1][self.__currFunction][0] == "":
             return True
 
         # Check if function name has already been declared
         for function in self.__parser.functions():
-            if self.__parser.tokens()[1][self.__currFunction] == function:
+            if self.__parser.tokens()[1][self.__currFunction][0] == function:
                 return True
 
         # Check if all letters are valid
@@ -133,6 +137,9 @@ class State1(State):
                 or letter == "_"
             ):
                 return True
+
+        if self.__parser.tokens()[1][self.__currFunction][0][0] in string.digits:
+            return True
 
         # Check if reserved keywords are not being used:
         for keyword in constants["reserved"]:
@@ -158,6 +165,7 @@ class State2(State):
         self.__output: bool = False
 
     def check(self) -> bool:
+
         # If no params, go to check semicolon OR go to next function to check
         if self.__parser.tokens()[1][self.__currFunction][1][self.__currParam][0] == "":
             self.__parser.changeState(State4(self.__parser, self.__currFunction))
@@ -216,12 +224,21 @@ class State3(State):
             ):
                 return True
 
+        if (
+            self.__parser.tokens()[1][self.__currFunction][1][self.__currParam][1][0]
+            in string.digits
+        ):
+            return True
+
         # Add Params to the list
         self.__parser.addParams(
             self.__parser.tokens()[1][self.__currFunction][1][self.__currParam][1]
         )
 
-        if self.__currParam < len(self.__parser.tokens()[1][self.__currFunction]) - 1:
+        if (
+            self.__currParam
+            < len(self.__parser.tokens()[1][self.__currFunction][1]) - 1
+        ):
             self.__parser.changeState(
                 State2(self.__parser, self.__currFunction, self.__currParam + 1)
             )

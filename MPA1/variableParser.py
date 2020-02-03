@@ -149,6 +149,9 @@ class State3(State):
             ):
                 return True
 
+        if self.__parser.tokens()[1][self.__currWord][0][0] in string.digits:
+            return True
+
         self.__parser.addVar(self.__parser.tokens()[1][self.__currWord][0])
 
         # If the more tokens are present, check the validity of the assignment statement,
@@ -186,6 +189,9 @@ class State4(State):
                 or letter == "_"
             ):
                 return True
+
+        if self.__parser.tokens()[1][self.__currWord][0][0] in string.digits:
+            return True
 
         if self.__parser.tokens()[1][self.__currWord][0][-1] == ";":
             self.__output = True
