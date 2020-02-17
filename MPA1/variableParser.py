@@ -182,8 +182,38 @@ class State3(State):
                 letter in string.ascii_letters
                 or letter in string.digits
                 or letter == "_"
+                or letter == "["
+                or letter == "]"
             ):
                 return True
+
+        openBracketCount = self.__parser.tokens()[1][self.__currWord][0].count("[")
+        closeBracketCount = self.__parser.tokens()[1][self.__currWord][0].count("]")
+        if openBracketCount != closeBracketCount and openBracketCount > 1:
+            return True
+        elif openBracketCount == 1:
+            openBracketPos = self.__parser.tokens()[1][self.__currWord][0].find("[")
+            closeBracketPos = self.__parser.tokens()[1][self.__currWord][0].find("]")
+
+            if openBracketPos > closeBracketPos:
+                return True
+
+            bracketContent = self.__parser.tokens()[1][self.__currWord][0][
+                openBracketPos + 1 : closeBracketPos
+            ]
+
+            isVar = False
+            for letter in bracketContent:
+                if not (letter in string.digits):
+                    isVar = True
+
+            if isVar and bracketContent not in self.__parser.vars():
+                return True
+
+            self.__parser.tokens()[1][self.__currWord][0] = (
+                self.__parser.tokens()[1][self.__currWord][0][:openBracketPos]
+                + self.__parser.tokens()[1][self.__currWord][0][closeBracketPos + 1 :]
+            )
 
         if self.__parser.tokens()[1][self.__currWord][0][0] in string.digits:
             return True

@@ -49,6 +49,7 @@ def main():
     with open("vallesmpa1.out", "w") as f:
         for parser in parsers:
             output = parser.checkPretty()
+            print(parser.tokens())
             print(count)
             print(output)
             count += 1
