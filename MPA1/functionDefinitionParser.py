@@ -49,11 +49,12 @@ class FunctionDefinitionParser(Parser):
         return self.__validity
 
     def checkPretty(self):
-        return (
-            "Valid Function Definition"
-            if self.check()
-            else "Invalid Function Definition"
-        )
+        success = False
+        try:
+            success = self.check()
+        except Exception:
+            success = False
+        return "Valid Function Definition" if success else "Invalid Function Definition"
 
 
 # Sources:

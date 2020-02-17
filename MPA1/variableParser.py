@@ -57,10 +57,13 @@ class VariableParser(Parser):
         self.__newVars.append(newVar)
 
     def checkPretty(self):
+        success = False
+        try:
+            success = self.check()
+        except Exception:
+            success = False
         return (
-            "Valid Variable Declaration"
-            if self.check()
-            else "Invalid Variable Declaration"
+            "Valid Variable Declaration" if success else "Invalid Variable Declaration"
         )
 
     def check(self):

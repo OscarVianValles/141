@@ -105,10 +105,13 @@ class FunctionDeclarationParser(Parser):
         return self.__state.output()
 
     def checkPretty(self):
+        success = False
+        try:
+            success = self.check()
+        except Exception:
+            success = False
         return (
-            "Valid Function Declaration"
-            if self.check()
-            else "Invalid Function Declaration"
+            "Valid Function Declaration" if success else "Invalid Function Declaration"
         )
 
 
