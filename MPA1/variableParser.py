@@ -5,17 +5,19 @@ import string
 
 
 class VariableParser(Parser):
-    def __init__(self, testCase: [str]):
+    def __init__(self, testCase: [str], scopeVars: [str], isReturn: bool):
         self.__tokens: [str] = testCase
         self.__state: "State" = State0(self)
-        self.__vars: [str] = []
+        self.__vars: [str] = scopeVars
+        self.__newVars: [str] = []
         self.__maxWords: int = 0
+        self.__isReturn = isReturn
 
         try:
             self.__tokenize()
         except IndexError:
-            self.__tokens.clear()
-            self.__validity = False
+            if not isReturn:
+                self.__tokens.clear()
 
     def __tokenize(self):
         # Separate leading data type
@@ -38,25 +40,35 @@ class VariableParser(Parser):
     def vars(self):
         return self.__vars
 
+    def fullVars(self):
+        return [[self.__tokens[0], var] for var in self.__newVars]
+
     def maxWords(self):
         return self.__maxWords
+
+    def isReturn(self):
+        return self.__isReturn
 
     def changeState(self, newState: "State"):
         self.__state = newState
 
     def addVar(self, newVar: str):
         self.__vars.append(newVar)
+        self.__newVars.append(newVar)
+
+    def checkPretty(self):
+        return (
+            "Valid Variable Declaration"
+            if self.check()
+            else "Invalid Variable Declaration"
+        )
 
     def check(self):
         currState = False
         while not currState:
             currState = self.__state.check()
 
-        return (
-            "Valid Variable Declaration"
-            if self.__state.output()
-            else "Invalid Variable Declaration"
-        )
+        return self.__state.output()
 
 
 # Check if the first token is a datatype
@@ -66,10 +78,25 @@ class State0(State):
         self.__output: bool = False
 
     def check(self) -> bool:
-        for dataType in constants["dataTypes"]:
-            if dataType in self.__parser.tokens()[0]:
-                self.__parser.changeState(State1(self.__parser, 0))
-                return False
+        if len(self.__parser.tokens()) == 0:
+            return True
+
+        if self.__parser.isReturn():
+            if (
+                "return" == self.__parser.tokens()[0]
+                or "return;" == self.__parser.tokens()[0]
+            ):
+                if len(self.__parser.tokens()) > 1:
+                    self.__parser.changeState(State1(self.__parser, 0))
+                    return False
+                else:
+                    self.__output = True
+                    return True
+        else:
+            for dataType in constants["dataTypes"]:
+                if dataType in self.__parser.tokens()[0]:
+                    self.__parser.changeState(State1(self.__parser, 0))
+                    return False
 
         return True
 
@@ -109,9 +136,15 @@ class State2(State):
         # Check all letters if it is in the allowable characters list
         variable = self.__parser.tokens()[1][self.__currWord][0]
         variable = variable if variable[-1] != ";" else variable[0:-1]
+        inVariable: bool = False
         for var in self.__parser.vars():
             if var == variable:
-                return True
+                inVariable = True
+
+        if (not self.__parser.isReturn() and inVariable) or (
+            self.__parser.isReturn() and not inVariable
+        ):
+            return True
 
         # Go to State4 if it is the last word AND it does not have an assignment function
         if (
@@ -194,6 +227,7 @@ class State4(State):
             return True
 
         if self.__parser.tokens()[1][self.__currWord][0][-1] == ";":
+            self.__parser.addVar(self.__parser.tokens()[1][self.__currWord][0][0:-1])
             self.__output = True
             return True
 
@@ -216,6 +250,20 @@ class State5(State):
             return True
 
         isLast: bool = self.__currWord == self.__parser.maxWords() - 1
+
+        if (
+            "+" in self.__parser.tokens()[1][self.__currWord][1]
+            or "-" in self.__parser.tokens()[1][self.__currWord][1]
+            or "*" in self.__parser.tokens()[1][self.__currWord][1]
+            or "/" in self.__parser.tokens()[1][self.__currWord][1]
+            or "%" in self.__parser.tokens()[1][self.__currWord][1]
+        ):
+            if isLast:
+                self.__parser.changeState(State12(self.__parser, self.__currWord))
+            else:
+                self.__parser.changeState(State13(self.__parser, self.__currWord))
+
+            return False
 
         # Check if char is being assigned
         if (
@@ -379,6 +427,93 @@ class State11(State):
     def check(self) -> bool:
         if self.__parser.tokens()[1][self.__currWord][1].count(".") > 1:
             return True
+
+        self.__parser.changeState(State1(self.__parser, self.__currWord + 1))
+        return False
+
+    def output(self) -> bool:
+        return self.__output
+
+
+class State12(State):
+    def __init__(self, parser: "Parser", currWord: int):
+        self.__parser: "Parser" = parser
+        self.__currWord: int = currWord
+        self.__output: bool = False
+
+    def check(self) -> bool:
+        currArgs = self.__parser.tokens()[1][self.__currWord][1]
+        currArgs = currArgs.replace("+", "*")
+        currArgs = currArgs.replace("-", "*")
+        currArgs = currArgs.replace("/", "*")
+        currArgs = currArgs.replace("%", "*")
+        currArgs = currArgs.replace("(", "*")
+        currArgs = currArgs.replace(")", "*")
+        currArgs = currArgs.strip().split("*")
+        currArgs = [arg.strip() for arg in currArgs]
+
+        # Check if last character is a semicolon
+        if currArgs[-1][-1] != ";":
+            return True
+        else:
+            # Correct semicolon
+            currArgs[-1] = currArgs[-1][:-1]
+
+        for i in range(len(currArgs)):
+            if "'" in currArgs[i] or '"' in currArgs[i]:
+                if currArgs[i][0] != currArgs[i][-1] or len(currArgs[i]) != 3:
+                    return True
+            else:
+                isVar: bool = False
+                # Check if the item to be operated on is a variable
+                for j in range(len(currArgs[i])):
+                    letter = currArgs[i][j]
+                    if not (letter in string.digits or letter == "." or letter == ";"):
+                        isVar = True
+
+                if isVar:
+                    if currArgs[i] not in self.__parser.vars():
+                        return True
+
+        self.__output = True
+        return True
+
+    def output(self) -> bool:
+        return self.__output
+
+
+class State13(State):
+    def __init__(self, parser: "Parser", currWord: int):
+        self.__parser: "Parser" = parser
+        self.__currWord: int = currWord
+        self.__output: bool = False
+
+    def check(self) -> bool:
+        currArgs = self.__parser.tokens()[1][self.__currWord][1]
+        currArgs = currArgs.replace("+", "*")
+        currArgs = currArgs.replace("-", "*")
+        currArgs = currArgs.replace("/", "*")
+        currArgs = currArgs.replace("%", "*")
+        currArgs = currArgs.replace("(", "*")
+        currArgs = currArgs.replace(")", "*")
+        currArgs = currArgs.strip().split("*")
+        currArgs = [arg.strip() for arg in currArgs]
+
+        for i in range(len(currArgs)):
+            if "'" in currArgs[i] or '"' in currArgs[i]:
+                if currArgs[i][0] != currArgs[i][-1] or len(currArgs[i]) != 3:
+                    return True
+            else:
+                isVar: bool = False
+                # Check if the item to be operated on is a variable
+                for j in range(len(currArgs[i])):
+                    letter = currArgs[i][j]
+                    if not (letter in string.digits or letter == "." or letter == ";"):
+                        isVar = True
+
+                if isVar:
+                    if currArgs[i] not in self.__parser.vars():
+                        return True
 
         self.__parser.changeState(State1(self.__parser, self.__currWord + 1))
         return False

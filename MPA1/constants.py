@@ -36,4 +36,5 @@ constants = {
     ],
     "dataTypes": ["int", "char", "double", "float"],
     "functionDataTypes": ["int", "char", "double", "float", "void"],
+    "functionDeclaratioDatatypes": ["int", "char", "double", "float", "return"],
 }

@@ -6,12 +6,14 @@ import tokenize
 
 
 class FunctionDeclarationParser(Parser):
-    def __init__(self, testCase: [str]):
+    def __init__(self, testCase: [str], isFunctionDefinition: bool):
         self.__tokens: [str] = testCase
         self.__state: "State" = State0(self)
         self.__params: [str] = []
+        self.__fullParams: [[str]] = []
         self.__functions: [str] = []
         self.__maxFunctions: int = 0
+        self.__isFunctionDefinition: bool = isFunctionDefinition
 
         try:
             self.__tokenize()
@@ -62,17 +64,29 @@ class FunctionDeclarationParser(Parser):
     def params(self):
         return self.__params
 
+    def fullParams(self):
+        return self.__fullParams
+
     def functions(self):
         return self.__functions
 
     def maxFunctions(self):
         return self.__maxFunctions
 
+    def isFunctionDefinition(self):
+        return self.__isFunctionDefinition
+
+    def dataType(self):
+        return self.__tokens[0]
+
     def addFunction(self, function: str):
         self.__functions.append(function)
 
     def addParams(self, param):
         self.__params.append(param)
+
+    def addFullParam(self, param):
+        self.__fullParams.append(param)
 
     def clearParams(self):
         self.__params.clear()
@@ -88,9 +102,12 @@ class FunctionDeclarationParser(Parser):
         while not currState:
             currState = self.__state.check()
 
+        return self.__state.output()
+
+    def checkPretty(self):
         return (
             "Valid Function Declaration"
-            if self.__state.output()
+            if self.check()
             else "Invalid Function Declaration"
         )
 
@@ -101,6 +118,9 @@ class State0(State):
         self.__output: bool = False
 
     def check(self):
+        if len(self.__parser.tokens()) == 0:
+            return True
+
         # Check if the datatype of the function is valid
         if self.__parser.tokens()[0] not in constants["functionDataTypes"]:
             return True
@@ -184,6 +204,10 @@ class State2(State):
                 State3(self.__parser, self.__currFunction, self.__currParam)
             )
 
+        # If it failed the first if statement, and it is a function definition. checking is done since all function definition should have parameter names
+        elif self.__parser.isFunctionDefinition():
+            return True
+
         # Else, check the semicolon or the next function to check
         else:
             self.__parser.changeState(State4(self.__parser, self.__currFunction))
@@ -233,6 +257,10 @@ class State3(State):
         # Add Params to the list
         self.__parser.addParams(
             self.__parser.tokens()[1][self.__currFunction][1][self.__currParam][1]
+        )
+
+        self.__parser.addFullParam(
+            self.__parser.tokens()[1][self.__currFunction][1][self.__currParam]
         )
 
         if (

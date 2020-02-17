@@ -36,9 +36,9 @@ def tokenizeFile() -> [[str]]:
             if "{" in testCase:
                 parsers.append(FunctionDefinitionParser([testCase.strip()]))
             elif "(" in testCase and "=" not in testCase:
-                parsers.append(FunctionDeclarationParser([testCase.strip()]))
+                parsers.append(FunctionDeclarationParser([testCase.strip()], False))
             else:
-                parsers.append(VariableParser([testCase.strip()]))
+                parsers.append(VariableParser([testCase.strip()], [], False))
 
         return parsers
 
@@ -48,12 +48,11 @@ def main():
     count = 1
     with open("vallesmpa1.out", "w") as f:
         for parser in parsers:
+            output = parser.checkPretty()
             print(count)
+            print(output)
             count += 1
-            print(parser.tokens())
-            print(parser.check())
-            print("")
-            print(parser.check(), file=f)
+            print(output, file=f)
 
 
 if __name__ == "__main__":
