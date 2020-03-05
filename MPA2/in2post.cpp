@@ -1,0 +1,161 @@
+#include "in2post.hpp"
+// Enum to store type and precedence
+enum type { _invalid, _close, _open, _alpha, _union, _concat, _kleene };
+
+type getType(char element) {
+  switch (element) {
+  case 'a':
+  case 'b':
+    return _alpha;
+
+  case 'O':
+    return _concat;
+
+  case 'U':
+    return _union;
+
+  case '*':
+    return _kleene;
+
+  case ')':
+    return _close;
+
+  case '(':
+    return _open;
+
+  default:
+    return _invalid;
+  }
+}
+
+char getChar(type element) {
+  switch (element) {
+  case _concat:
+    return 'O';
+
+  case _union:
+    return 'U';
+
+  case _kleene:
+    return '*';
+
+  case _close:
+    return ')';
+
+  case _open:
+    return '(';
+
+  default:
+    // getChar shouldn't be receiving types that are not of the above
+    throw - 1;
+  }
+}
+
+// Specific concatenation operator is added so that it will be easier later on
+// to identify precedence when converting to postfix notation
+std::string addConcat(std::string inputString) {
+  int inLen = inputString.length();
+  std::string output;
+
+  type token = _invalid, prevToken = _invalid;
+  for (int i = 0; i < inLen; ++i) {
+    token = getType(inputString[i]);
+    // Skip if token or prevToken is a space or other invalid tokens
+    if (token == _invalid || prevToken == _invalid) {
+      // However, if token is valid, it will be added to the output
+      if (token != _invalid) {
+        output.push_back(inputString[i]);
+      }
+
+      // Properly set prevToken so that the loop will continue properly
+      prevToken = token;
+      continue;
+    }
+
+    // Based on the rules of concatenation, the tokens that can be concatenated
+    // to are the elements of the alphabet and the open parenthesis. This is the
+    // purpose of the first check. The tokens that can concatenate are the
+    // elements of the alphabet aOb, the kleene star a*b, and the close
+    // parenthesis (a)*a. This is checked in the second statement
+    if ((token == _alpha || token == _open) &&
+        (prevToken == _alpha || prevToken == _kleene || prevToken == _close)) {
+      output.push_back('O');
+    }
+
+    // The token is then added to the output
+    output.push_back(inputString[i]);
+    // Set prevToken to previous token
+    prevToken = token;
+  }
+
+  std::cout << output << std::endl;
+
+  return output;
+}
+
+// Converts infix regex to postfix regex using the Shunting-yard algorithm
+// Source: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+std::string in2post(std::string inputString) {
+
+  // Add Specific Concat Operator and remove spaces
+  inputString = addConcat(inputString);
+
+  // Setup needed components of the Shunting-yard algorithm
+  std::string output;
+  std::stack<type> op;
+  int inLen = inputString.length();
+
+  for (int i = 0; i < inLen; ++i) {
+    // get Token Type
+    auto token = getType(inputString[i]);
+    // If it is an element of the alphabet, it will be added to the output, then
+    // it moves on to the next loop
+    if (token == _alpha) {
+      output.push_back(inputString[i]);
+    }
+
+    // Algo to perform if it is an operator
+    else if (token == _concat || token == _union || token == _kleene) {
+      // The loop pops all elements of the stack until the top of the stack is
+      // an open parenthesis or the next operator is of lower precedence
+      while (!op.empty()) {
+        if (op.top() != _open && op.top() >= token) {
+          output.push_back(getChar(op.top()));
+          op.pop();
+        } else {
+          break;
+        }
+      }
+      op.push(token);
+    }
+
+    // If it is an open parenthesis, simply push the token to the stack
+    else if (token == _open) {
+      op.push(token);
+    }
+
+    // If it is a close parenthesis, pop all elements of the stack until an open
+    // parenthesis is found. Finally, pop the open parenthesis
+    else if (token == _close) {
+      while (!op.empty()) {
+        if (op.top() != _open) {
+          output.push_back(getChar(op.top()));
+          op.pop();
+        } else {
+          break;
+        }
+      }
+      if (!op.empty() && op.top() == _open) {
+        op.pop();
+      }
+    }
+  }
+
+  // Place all operators still on the stack back to the output
+  while (!op.empty()) {
+    output.push_back(getChar(op.top()));
+    op.pop();
+  }
+
+  return output;
+}
