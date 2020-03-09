@@ -2,22 +2,21 @@
 #define NFA_H
 
 #include "state.hpp"
+#include <memory>
 
 class NFA {
 private:
-  State *_startState;
-  std::list<State *> _endStates;
+  std::shared_ptr<State> _startState;
+  std::list<std::shared_ptr<State>> _endStates;
 
 public:
   NFA();
   NFA(char);
-  NFA(State *, std::list<State *>);
-  NFA(State *);
-  NFA(std::list<State *>);
+  NFA(std::shared_ptr<State>, std::list<std::shared_ptr<State>>);
 
-  State *startState();
-  std::list<State *> endStates();
-  void addNewState(State *);
+  std::shared_ptr<State> startState();
+  std::list<std::shared_ptr<State>> endStates();
+  void addNewState(std::shared_ptr<State>);
   void connectNewNFA(NFA);
 };
 

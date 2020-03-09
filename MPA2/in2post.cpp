@@ -1,4 +1,6 @@
 #include "in2post.hpp"
+#include "type.hpp"
+#include <iostream>
 
 // Specific concatenation operator is added so that it will be easier later on
 // to identify precedence when converting to postfix notation
@@ -25,9 +27,13 @@ std::string addConcat(std::string inputString) {
     // to are the elements of the alphabet and the open parenthesis. This is the
     // purpose of the first check. The tokens that can concatenate are the
     // elements of the alphabet aOb, the kleene star a*b, and the close
-    // parenthesis (a)*a. This is checked in the second statement
-    if ((token == _alpha || token == _open) &&
-        (prevToken == _alpha || prevToken == _kleene || prevToken == _close)) {
+    // parenthesis (a)*a. This is checked in the second statement.
+    //
+    // Another thing added here is checking for empty and adding the appropriate
+    // concatenation. This is so that ea will become eOa, ae will become aOe
+    if ((token == _alpha || token == _open || token == _empty) &&
+        (prevToken == _alpha || prevToken == _kleene || prevToken == _close ||
+         prevToken == _empty)) {
       output.push_back('O');
     }
 
@@ -55,9 +61,9 @@ std::string in2post(std::string inputString) {
   for (int i = 0; i < inLen; ++i) {
     // get Token Type
     auto token = getType(inputString[i]);
-    // If it is an element of the alphabet, it will be added to the output, then
-    // it moves on to the next loop
-    if (token == _alpha) {
+    // If it is an element of the alphabet or empty string, it will be added to
+    // the output, then it moves on to the next loop
+    if (token == _alpha || token == _empty) {
       output.push_back(inputString[i]);
     }
 
