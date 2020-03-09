@@ -1,55 +1,4 @@
 #include "in2post.hpp"
-// Enum to store type and precedence
-enum type { _invalid, _close, _open, _alpha, _union, _concat, _kleene };
-
-type getType(char element) {
-  switch (element) {
-  case 'a':
-  case 'b':
-    return _alpha;
-
-  case 'O':
-    return _concat;
-
-  case 'U':
-    return _union;
-
-  case '*':
-    return _kleene;
-
-  case ')':
-    return _close;
-
-  case '(':
-    return _open;
-
-  default:
-    return _invalid;
-  }
-}
-
-char getChar(type element) {
-  switch (element) {
-  case _concat:
-    return 'O';
-
-  case _union:
-    return 'U';
-
-  case _kleene:
-    return '*';
-
-  case _close:
-    return ')';
-
-  case _open:
-    return '(';
-
-  default:
-    // getChar shouldn't be receiving types that are not of the above
-    throw - 1;
-  }
-}
 
 // Specific concatenation operator is added so that it will be easier later on
 // to identify precedence when converting to postfix notation
@@ -87,8 +36,6 @@ std::string addConcat(std::string inputString) {
     // Set prevToken to previous token
     prevToken = token;
   }
-
-  std::cout << output << std::endl;
 
   return output;
 }
