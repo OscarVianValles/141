@@ -17,31 +17,22 @@ bool Regex::match(std::string testString) {
   // Check the states
   stateStack.push(_regex.startState());
   stringStack.push(testString);
+  stateStack.push(_regex.startState());
+  stringStack.push("e" + testString);
+
   while (!stateStack.empty()) {
     // Get the current states
     currState = stateStack.top();
-    currString = stringStack.top();
     stateStack.pop();
+
+    currString = stringStack.top();
     stringStack.pop();
 
-    // Get the next states depending on the next string.
-    if (currString != "e") {
-      nextStates = currState->check(currString[0]);
-    } else {
-      // Handle if empty string is passed. This is true when the current state
-      // is empty and the next state is not empty
-      if (currState->stateType() == _empty && currState->nextStates().empty() &&
-          currString == "e") {
-        std::cout << "here" << std::endl;
-        return true;
-      } else {
-        return false;
-      }
-    }
+    nextStates = currState->check(currString[0]);
 
-    // If the content of the next state is a nullptr, that means the check has
-    // failed and to remove this state from the stack
-    if (nextStates.front() == nullptr && nextStates.size() != 0) {
+    // If the content of the next state is of a invalid type, that means the
+    // check has failed and to remove this state from the stack
+    if (!nextStates.empty() && nextStates.front()->stateType() == _invalid) {
       continue;
     }
 
@@ -52,15 +43,12 @@ bool Regex::match(std::string testString) {
     }
 
     while (!nextStates.empty()) {
+      // Add next state and next string without the used character
       stateStack.push(nextStates.front());
-      // If the current state is of type empty or union, do not remove the
-      // preceding character
-      if (currState->stateType() == _empty ||
-          currState->stateType() == _union) {
-        stringStack.push(currString);
-      } else {
-        stringStack.push(currString.substr(1));
-      }
+      stringStack.push(currString.substr(1));
+      // Handle if empty string is passed
+      stateStack.push(nextStates.front());
+      stringStack.push("e" + currString.substr(1));
 
       nextStates.pop_front();
     }

@@ -37,7 +37,7 @@ int main() {
         } else if (testCaseLength == -1) {
           testCaseLength = std::stoi(lines);
         } else if (testCaseLength > 0) {
-          output << (regex.match(lines) ? "yes" : "no") << std::endl;
+          // output << (regex.match(lines) ? "yes" : "no") << std::endl;
           std::cout << (regex.match(lines) ? "yes" : "no") << std::endl;
           --testCaseLength;
         }
