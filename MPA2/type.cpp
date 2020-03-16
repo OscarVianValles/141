@@ -51,6 +51,6 @@ char getChar(type element) {
 
   default:
     // getChar shouldn't be receiving types that are not of the above
-    throw - 1;
+    throw "getChar received non valid type";
   }
 }

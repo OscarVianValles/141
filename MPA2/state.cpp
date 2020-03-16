@@ -5,7 +5,7 @@
 // Constructor
 State::State(char allowableCharacter) {
   _type = getType(allowableCharacter);
-  if (_type == _union) {
+  if (_type == _union || _type == _kleene) {
     _allowableCharacter = 'e';
   } else {
     _allowableCharacter = allowableCharacter;

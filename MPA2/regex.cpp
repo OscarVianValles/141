@@ -1,6 +1,7 @@
 #include "regex.hpp"
 #include "type.hpp"
 #include <iostream>
+#include <memory>
 
 Regex::Regex(std::string inputRegex) { _regex = _createNFA(inputRegex); }
 
@@ -107,8 +108,20 @@ NFA Regex::_createNFA(std::string postFix) {
       break;
     }
 
+    case '*': {
+      NFA toRepeat = _nfaStack.top();
+      _nfaStack.pop();
+      auto starState = std::make_shared<State>('*');
+      auto emptyState = std::make_shared<State>('e');
+      starState->addState(toRepeat.startState());
+      starState->addState(emptyState);
+      toRepeat.addNewState(starState);
+      _nfaStack.push(NFA(starState, starState->nextStates()));
+      break;
+    }
+
     default:
-      throw - 1;
+      throw "Error Creating NFA";
     }
 
     postFix = postFix.substr(1);
@@ -117,6 +130,6 @@ NFA Regex::_createNFA(std::string postFix) {
   if (_nfaStack.size() == 1) {
     return _nfaStack.top();
   } else {
-    throw - 1;
+    throw "NFA Stack greater than 1";
   }
 }
