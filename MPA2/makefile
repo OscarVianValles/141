@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-c -g -Wall -fsanitize=address -std=c++11
-LDFLAGS= -fsanitize=address
+CFLAGS=-c -g -Wall -std=c++11
+LDFLAGS=
 LIBFLAGS=
 SOURCES=$(wildcard *.cpp) $(wildcard */*.cpp)
 OBJECTS=$(SOURCES:.cpp=.o)
